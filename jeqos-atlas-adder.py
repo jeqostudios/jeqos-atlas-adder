@@ -160,7 +160,7 @@ content_frame.pack(expand=True, fill="both")
 
 # Resource Packs Label
 json_files_label = tk.Label(content_frame, text="Resource Packs:", bg="#111", fg="white")
-json_files_label.pack(pady=(10, 0))
+json_files_label.pack(pady=(10, 10), anchor="w")
 
 # Treeview
 json_files_treeview = Treeview(content_frame, selectmode="browse", columns=("Name",), show="tree")
@@ -179,7 +179,7 @@ refresh_button.pack(pady=(0, 30))
 select_button = tk.Button(content_frame, text="Add/Update Atlas", command=create_atlas, bg="#333", fg="white", activebackground="#444", activeforeground="white", relief=tk.FLAT, width=120)
 select_button.pack(pady=(0, 10))
 
-zip_button = tk.Button(content_frame, text="Create Zip Archive", command=zip_resource_pack, bg="#333", fg="white", activebackground="#444", activeforeground="white", relief=tk.FLAT, width=120)
+zip_button = tk.Button(content_frame, text="Zip Resource Pack", command=zip_resource_pack, bg="#333", fg="white", activebackground="#444", activeforeground="white", relief=tk.FLAT, width=120)
 zip_button.pack(pady=(0, 0))
 
 banner_label = tk.Label(main_window, text="", bg="#222", fg="white", padx=6, pady=6)  # Banner label
