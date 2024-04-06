@@ -11,8 +11,11 @@ def create_blocks_json(resource_pack_path):
     atlases_folder = os.path.join(resource_pack_path, "assets", "minecraft", "atlases")
     os.makedirs(atlases_folder, exist_ok=True)
 
-    # Create blocks.json file inside 'atlases' folder
+    # Check if blocks.json already exists
     blocks_file_path = os.path.join(atlases_folder, "blocks.json")
+    blocks_json_exists = os.path.exists(blocks_file_path)
+
+    # Create blocks.json file inside 'atlases' folder
     atlas_data = {"sources": []}
 
     # Scan each directory inside <selected-pack>/assets/
@@ -40,7 +43,10 @@ def create_blocks_json(resource_pack_path):
     with open(blocks_file_path, "w") as f:
         json.dump(atlas_data, f, indent=4)
 
-    show_confirmation(f"Atlas added/updated for '{os.path.basename(resource_pack_path)}.'", "#4CAF50")
+    if blocks_json_exists:
+        show_confirmation(f"Atlas updated for '{os.path.basename(resource_pack_path)}.'", "#4CAF50")
+    else:
+        show_confirmation(f"Atlas added to '{os.path.basename(resource_pack_path)}.'", "#4CAF50")
 
     # Schedule the fade out after 3 seconds
     main_window.after(3000, fade_out_confirmation)
@@ -123,6 +129,12 @@ def zip_resource_pack():
     else:
         show_error_banner("Select a resource pack.")
 
+def on_hover_close(event):
+    close_button.config(bg="#d90b20")
+
+def on_leave_close(event):
+    close_button.config(bg="#222")
+
 # Set the current working directory to the directory of the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -149,6 +161,9 @@ title_bar.pack(fill="x")
 
 title_label.pack(side="left")
 close_button.pack(side="right")
+
+close_button.bind("<Enter>", on_hover_close)
+close_button.bind("<Leave>", on_leave_close)
 
 # Make the custom title bar draggable
 title_bar.bind("<Button-1>", on_title_bar_drag_start)
