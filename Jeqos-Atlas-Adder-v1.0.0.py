@@ -35,15 +35,14 @@ latest_version = check_latest_version(github_release_url)
 
 if latest_version:
     if compare_versions(current_version, latest_version):
-        banner_label.config(text="A newer version is available. Click here to update.", bg="#d90b20", fg="white")
+        banner_label.config(text="A newer version is available. Click here to view page.", bg="#d90b20", fg="white")
         main_window.after(5000, lambda: banner_label.config(text="", bg="#222"))
 else:
     banner_label.config(text="Failed to retrieve latest info from GitHub: {str(e)}", bg="#d90b20", fg="white")
     main_window.after(5000, lambda: banner_label.config(text="", bg="#222"))
 
 def update_banner(event):
-    if banner_label.cget("text") == "A newer version is available. Click here to update.":
-        # Open a web page when the error banner is clicked
+    if banner_label.cget("text") == "A newer version is available. Click here to view page.":
         webbrowser.open("https://jeqo.net/atlas-adder")
 
 banner_label.bind("<Button-1>", update_banner)
