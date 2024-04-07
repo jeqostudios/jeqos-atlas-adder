@@ -5,6 +5,51 @@ from tkinter import filedialog, messagebox
 from tkinter.ttk import Treeview
 import shutil
 import zipfile
+import requests
+import webbrowser
+
+current_version = "1.0.0"
+
+main_window = tk.Tk()
+main_window.title("Jeqo's Atlas Adder")
+main_window.configure(bg="#111")
+main_window.overrideredirect(True)
+
+banner_label = tk.Label(main_window, text="", bg="#222", fg="white", padx=6, pady=6)  # Banner label
+banner_label.pack(fill="x", side="bottom")
+
+github_release_url = "https://github.com/jeqostudios/jeqos-json-editor/releases/latest"
+
+def check_latest_version(release_url):
+    try:
+        response = requests.get(release_url, allow_redirects=False)
+        latest_version = response.headers['Location'].split('/')[-1]
+        return latest_version
+    except Exception as e:
+        show_error_banner("Failed to retrieve latest info from GitHub: {str(e)}")
+        return None
+
+def compare_versions(current_version, latest_version):
+    current_version = current_version.lstrip("v")
+    latest_version = latest_version.lstrip("v")
+    return current_version < latest_version
+
+latest_version = check_latest_version(github_release_url)
+
+if latest_version:
+    if compare_versions(current_version, latest_version):
+        banner_label.config(text="A newer version is available. Click here to update.", bg="#d90b20", fg="white")
+        main_window.after(5000, lambda: banner_label.config(text="", bg="#222"))
+else:
+    banner_label.config(text="Failed to retrieve latest info from GitHub: {str(e)}", bg="#d90b20", fg="white")
+    main_window.after(5000, lambda: banner_label.config(text="", bg="#222"))
+
+def update_banner(event):
+    if banner_label.cget("text") == "A newer version is available. Click here to update.":
+        # Open a web page when the error banner is clicked
+        webbrowser.open("https://jeqo.net/atlas-adder")
+
+banner_label.bind("<Button-1>", update_banner)
 
 def create_blocks_json(resource_pack_path):
     # Create 'atlases' folder if it doesn't exist
@@ -28,14 +73,14 @@ def create_blocks_json(resource_pack_path):
                 if os.path.exists(textures_dir):
                     for texture_root, texture_dirs, texture_files in os.walk(textures_dir):
                         for texture_dir_name in texture_dirs:
-                            print("Adding source:", texture_dir_name)
+                            show_info_banner("Adding source: " + texture_dir_name)
                             source_path = os.path.relpath(os.path.join(dir_path, "textures", texture_dir_name), assets_dir)
                             # Removing leading directories from source_path
                             while "\\" in source_path:
                                 source_path = source_path[source_path.index("\\") + 1:]
                             atlas_data["sources"].append({
                                 "source": texture_dir_name,
-                                "prefix": source_path,  # No trailing slash
+                                "prefix": source_path,
                                 "type": "directory"
                             })
 
@@ -48,11 +93,7 @@ def create_blocks_json(resource_pack_path):
     else:
         show_confirmation(f"Atlas added to '{os.path.basename(resource_pack_path)}.'", "#4CAF50")
 
-    # Schedule the fade out after 3 seconds
-    main_window.after(3000, fade_out_confirmation)
-
-def fade_out_confirmation():
-    banner_label.config(text="", bg="#222")  # Reset the banner
+    main_window.after(3000, reset_banner)
 
 def resource_pack_selected(event):
     selected_item = json_files_treeview.selection()
@@ -70,24 +111,6 @@ def update_treeview():
             pack_mcmeta_path = os.path.join(current_directory, item, "pack.mcmeta")
             if os.path.exists(pack_mcmeta_path):
                 json_files_treeview.insert("", "end", text=item)
-
-def show_confirmation(message, bg):
-    banner_label.config(text=message, bg=bg, fg="white")
-
-    # Schedule the fade out after 3 seconds
-    main_window.after(3000, fade_out_confirmation)
-
-def show_error_banner(message):
-    banner_label.config(text=message, bg="#d90b20", fg="white")
-
-    # Schedule the fade out after 3 seconds
-    main_window.after(3000, fade_out_confirmation)
-
-def show_info_banner(message):
-    banner_label.config(text=message, bg="#0b80d9", fg="white")
-
-    # Schedule the fade out after 3 seconds
-    main_window.after(3000, fade_out_confirmation)
 
 def on_title_bar_drag_start(event):
     global _drag_start_x, _drag_start_y
@@ -135,26 +158,36 @@ def on_hover_close(event):
 def on_leave_close(event):
     close_button.config(bg="#222")
 
+def show_confirmation(message, bg):
+    banner_label.config(text=message, bg=bg, fg="white")
+    main_window.after(3000, reset_banner)
+
+def show_error_banner(message):
+    banner_label.config(text=message, bg="#d90b20", fg="white")
+    main_window.after(3000, reset_banner)
+
+def show_info_banner(message):
+    banner_label.config(text=message, bg="#0b80d9", fg="white")
+    main_window.after(3000, reset_banner)
+
+def reset_banner():
+    banner_label.config(text="", bg="#222")
+
 # Set the current working directory to the directory of the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
-main_window = tk.Tk()
-main_window.title("Jeqo's Atlas Adder")
-main_window.configure(bg="#111")  # Set dark background color
-main_window.overrideredirect(True)  # Hide default title bar
-
 # Calculate the position of the window to center it on the screen
 screen_width = main_window.winfo_screenwidth()
 screen_height = main_window.winfo_screenheight()
-window_width = 400  # Set your desired window width
-window_height = 505  # Set your desired window height
+window_width = 400
+window_height = 505
 x_position = (screen_width - window_width) // 2
 y_position = (screen_height - window_height) // 2
 main_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
 # Create custom title bar
-title_bar = tk.Frame(main_window, bg="#222", relief="raised", bd=0, padx=0, pady=0)  # Adjust padding here
+title_bar = tk.Frame(main_window, bg="#222", relief="raised", bd=0, padx=0, pady=0)
 title_label = tk.Label(title_bar, text="Jeqo's Atlas Adder (JAA)", bg="#222", fg="white", padx=6, pady=6)
 close_button = tk.Button(title_bar, text="X", command=main_window.quit, bg="#222", fg="white", relief="flat", padx=12, pady=6, activebackground="#d90b20", activeforeground="white", font=("Arial", 10, "bold"), borderwidth=0)
 title_bar.pack(fill="x")
@@ -196,8 +229,5 @@ select_button.pack(pady=(0, 10))
 
 zip_button = tk.Button(content_frame, text="Zip Resource Pack", command=zip_resource_pack, bg="#333", fg="white", activebackground="#444", activeforeground="white", relief=tk.FLAT, width=120)
 zip_button.pack(pady=(0, 0))
-
-banner_label = tk.Label(main_window, text="", bg="#222", fg="white", padx=6, pady=6)  # Banner label
-banner_label.pack(fill="x")
 
 main_window.mainloop()
