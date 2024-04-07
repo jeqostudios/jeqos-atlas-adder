@@ -11,14 +11,11 @@ import webbrowser
 current_version = "1.0.0"
 
 main_window = tk.Tk()
-main_window.title("Jeqo's Atlas Adder")
-main_window.configure(bg="#111")
-main_window.overrideredirect(True)
 
 banner_label = tk.Label(main_window, text="", bg="#222", fg="white", padx=6, pady=6)  # Banner label
 banner_label.pack(fill="x", side="bottom")
 
-github_release_url = "https://github.com/jeqostudios/jeqos-json-editor/releases/latest"
+github_release_url = "https://github.com/jeqostudios/jeqos-atlas-adder/releases/latest"
 
 def check_latest_version(release_url):
     try:
@@ -176,6 +173,10 @@ def reset_banner():
 # Set the current working directory to the directory of the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
+
+main_window.title("Jeqo's Atlas Adder")
+main_window.configure(bg="#111")
+main_window.overrideredirect(True)
 
 # Calculate the position of the window to center it on the screen
 screen_width = main_window.winfo_screenwidth()
