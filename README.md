@@ -1,11 +1,31 @@
 # Jeqo's Atlas Adder
 Simple UI to add or update atlases for Java Minecraft resource packs (versions 1.19.3+).
 
+
 ## Usage
-1. Install [Python](https://www.python.org/downloads/).
-2. Place the Python script (Jeqos Atlas Adder (JAA).py) in the same folder as your resource pack(s).
-3. Run the script (if it doesn't open, right-click, "Open with," and select Python.
-4. Select your resource pack and press "Add/Update Atlas."
+1. Download the latest release.
+
+2. Extract the files.
+ - Extract the contents of the downloaded zip to a location of your choice.
+
+3. Install python (if not already installed).
+ - Ensure you have Python 3.x installed on your system. You can download it from [python.org](https://python.org).
+
+4. Run the script.
+  - For Windows:
+    - Double-click the start.bat file to install required dependencies and run the script.
+  - For macOS/Linux:
+    - Open a terminal and navigate to the directory where the script is located.
+    - Run the following commands:
+```
+chmod +x start.sh
+./start.sh
+```
+
+## Notes
+- The script will automatically check for the latest version available on GitHub. If a newer version is available, a banner will appear at the bottom of the window with a link to the latest release page.
+- Ensure that you have an active internet connection for the script to check for updates and install dependencies.
+
 
 ## Preview
-![](https://i.imgur.com/0XfTyza.png)
+![](https://i.imgur.com/mh1LT73.png)
